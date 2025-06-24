@@ -1,0 +1,31 @@
+import bpy
+import json
+
+# ✅ Ruta a tu archivo JSON
+json_path = "C:/Users/Enzo/Desktop/IA_Final/2/pose_data_2D3.json"
+
+# 🔄 Escala para hacer la pose visible (ajustable)
+scale = 10
+
+# 📁 Leer JSON
+with open(json_path) as f:
+    data = json.load(f)
+
+# 🧹 Eliminar empties anteriores (opcional)
+for obj in bpy.data.objects:
+    if obj.name.startswith("LM_"):
+        bpy.data.objects.remove(obj)
+
+# 🧠 Crear un empty para cada punto del JSON
+for lm_name, coords in data.items():
+    x = (coords["x"] - 0.5) * scale
+    z = (0.5 - coords["y"]) * scale
+    pos = (x, 0, z)
+
+    empty = bpy.data.objects.new(f"LM_{lm_name}", None)
+    empty.location = pos
+    empty.empty_display_size = 0.05
+    empty.empty_display_type = 'SPHERE'
+    bpy.context.collection.objects.link(empty)
+
+print("✅ Puntos creados")
